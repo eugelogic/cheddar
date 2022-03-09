@@ -6,3 +6,45 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique @db.VarChar(255)
+  password String
+  name     String  @unique @db.Char(50)
+  avatar   String?
+  stores   Store[]
+}
+
+model Store {
+  id       Int     @id @default(autoincrement())
+  name     String
+  location String?
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  lists    List[]
+}
+
+model List {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId     Int
+  products    Product[]
+}
+
+model Product {
+  id                  Int     @id @default(autoincrement())
+  productName         String  @db.Char(50)
+  description         String?
+  quantity            Int     @default(1)
+  needsBuying         Boolean @default(true)
+  basketed            Boolean @default(false)
+  positionIndex       Int
+  price               Float?  @default(0.0)
+  pricePerMeasurement Float?  @default(0.0)
+  image               String?
+  list                List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId              Int
+}
