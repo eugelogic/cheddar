@@ -11,7 +11,7 @@ model User {
   id          Int       @id @default(autoincrement())
   email       String    @unique @db.VarChar(255)
   password    String
-  name        String    @unique @db.Char(50)
+  name        String
   avatar      String?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
@@ -42,7 +42,7 @@ model List {
 
 model Product {
   id                  Int       @id @default(autoincrement())
-  name                String    @db.Char(50)
+  name                String
   description         String?
   quantity            Int       @default(1)
   needsBuying         Boolean   @default(true)
