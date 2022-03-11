@@ -36,7 +36,7 @@ model List {
 
 model Product {
   id                  Int     @id @default(autoincrement())
-  productName         String  @db.Char(50)
+  name                String  @db.Char(50)
   description         String?
   quantity            Int     @default(1)
   needsBuying         Boolean @default(true)
