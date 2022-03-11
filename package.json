@@ -11,7 +11,13 @@
         "check-ts": "tsc --noEmit --project tsconfig.json",
         "check-format": "prettier --list-different .",
         "format": "prettier --write .",
-        "pre-commit": "yarn check-ts && yarn format && yarn lint"
+        "pre-commit": "yarn check-ts && lint-staged"
+    },
+    "lint-staged": {
+        "**/*.+(js|jsx|ts|tsx)": [
+            "prettier --write",
+            "eslint"
+        ]
     },
     "dependencies": {
         "next": "12.1.0",
@@ -24,6 +30,7 @@
         "eslint": "8.10.0",
         "eslint-config-next": "12.1.0",
         "husky": "^7.0.0",
+        "lint-staged": "^12.3.5",
         "prettier": "2.5.1",
         "prisma": "^3.10.0",
         "typescript": "4.6.2"
