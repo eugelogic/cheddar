@@ -1,3 +1,4 @@
+import * as yup from 'yup'
 import prisma from '@lib/prisma'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -6,13 +7,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const users = await prisma?.user.findMany()
         res.json(users)
     } else if (req.method === 'POST') {
-        const body = req.body
+        const { email, password, name, avatar } = req.body
+
+        const schema = yup.object().shape({
+            email: yup
+                .string()
+                .email('must be a valid email')
+                .test('unique-email', 'email address already exists', async (value) => {
+                    const match = await prisma?.user.findUnique({
+                        where: {
+                            email: value,
+                        },
+                    })
+                    return match === null
+                })
+                .required(),
+            password: yup.string().min(8, 'must be at least 8 characters long').required(),
+            name: yup.string().required(),
+            avatar: yup.string().url().nullable(),
+        })
+
+        const data = await schema.validate({ email, password, name, avatar })
+
         const post = await prisma?.user.create({
             data: {
-                email: body.email,
-                password: body.password,
-                name: body.name,
-                avatar: body.avatar,
+                email: data.email,
+                password: data.password,
+                name: data.name,
+                avatar: data.avatar,
             },
         })
         res.status(201).json(post)
