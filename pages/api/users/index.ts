@@ -1,5 +1,6 @@
 import * as yup from 'yup'
 import prisma from '@lib/prisma'
+import bcrypt from 'bcrypt'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -32,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const user = await prisma?.user.create({
             data: {
                 email: data.email,
-                password: data.password,
+                password: await bcrypt.hash(data.password, 12),
                 name: data.name,
                 avatar: data.avatar,
             },
