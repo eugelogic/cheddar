@@ -6,7 +6,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         const users = await prisma?.user.findMany()
-        res.json(users)
+        res.json(users?.map(({ password, ...users }) => users))
     } else if (req.method === 'POST') {
         const { email, password, name, avatar } = req.body
 
