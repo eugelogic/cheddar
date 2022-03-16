@@ -1,6 +1,6 @@
 import * as yup from 'yup'
-import prisma from '@lib/prisma'
 import bcrypt from 'bcrypt'
+import prisma from '@lib/prisma'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
