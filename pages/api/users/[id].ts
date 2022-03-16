@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
     })
     if (user === null || typeof user === 'undefined') {
-        res.status(404).send(`User with id: ${req.query.id} does not exist.`)
+        res.status(404).json({ error: `User with id: ${req.query.id} does not exist.` })
         return
     }
     if (req.method === 'GET') {
@@ -68,6 +68,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
         res.send(`User with id: ${user.id} deleted`)
     } else {
-        res.status(405).send(`Method ${req.method} not allowed.`)
+        res.status(405).json({ error: `Method ${req.method} not allowed.` })
     }
 }
