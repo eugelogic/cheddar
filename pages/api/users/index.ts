@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const schema = yup.object().shape({
             email: yup
                 .string()
-                .email('must be a valid email')
+                .email('not a valid email')
                 .test('unique-email', 'email address already exists', async (value) => {
                     const match = await prisma?.user.findUnique({
                         where: {
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const data = await schema.validate({ email, password, name, avatar })
 
-        const post = await prisma?.user.create({
+        const user = await prisma?.user.create({
             data: {
                 email: data.email,
                 password: data.password,
@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 avatar: data.avatar,
             },
         })
-        res.status(201).json(post)
+        res.status(201).json(user)
     } else {
         res.status(405)
     }
