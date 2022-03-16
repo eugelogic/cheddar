@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const { password: _, ...userUpdated } = await prisma.user.update({
             where: {
-                id: user?.id,
+                id: user.id,
             },
             data: {
                 email: data.email,
@@ -63,10 +63,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else if (req.method === 'DELETE') {
         await prisma.user.delete({
             where: {
-                id: user?.id,
+                id: user.id,
             },
         })
-        res.send(`User with id: ${user?.id} deleted`)
+        res.send(`User with id: ${user.id} deleted`)
     } else {
         res.status(405).send(`Method ${req.method} not allowed.`)
     }
