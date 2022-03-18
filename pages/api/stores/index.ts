@@ -7,26 +7,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const stores = await prisma?.store.findMany()
         res.json(stores)
     } else if (req.method === 'POST') {
+        const { name, location, userId } = req.body
         const schema = yup.object().shape({
-            userId: yup
-                .number()
-                .integer()
-                .test('user-exists', 'user id does not exist', async (id) => {
-                    const unique = await prisma?.user.findUnique({
-                        where: {
-                            id: id,
-                        },
-                    })
-                    return unique !== null
+            name: yup
+                .string()
+                .test('unique-name', 'Store name already exists.', async (value) => {
+                    const stores = await prisma?.store.findMany()
+                    const match = stores?.find((store) => store.name === value)
+                    return match === undefined
                 })
                 .required(),
-            name: yup.string().required(),
             location: yup.string().nullable(),
+            userId: yup.number().required(),
         })
-        const data = await schema.validate(req.body)
-        const store = await prisma?.store.create({ data })
-        res.status(201).json(store)
+        const data = await schema.validate({ name, location, userId })
+
+        const store = await prisma?.store.create({
+            data: {
+                name: data.name,
+                location: data.location,
+                userId: data.userId,
+            },
+        })
+        const response = {
+            store,
+            message: `New store successfully added.`,
+        }
+        res.status(201).json(response)
     } else {
-        res.status(405)
+        res.status(405).json({ error: `Method ${req.method} not allowed.` })
     }
 }
