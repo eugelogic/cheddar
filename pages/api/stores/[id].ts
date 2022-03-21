@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { name, location } = req.body
 
         const schema = yup.object().shape({
-            name: yup.string().required(),
+            name: yup.string().min(1, 'Name cannot be empty'),
             location: yup.string().nullable(),
         })
 
@@ -34,19 +34,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
             data,
         })
-
-        const response = {
-            storeUpdated,
-            message: `Store with id: ${store.id} updated.`,
-        }
-        res.json(response)
+        res.status(200).json(storeUpdated)
     } else if (req.method === 'DELETE') {
         await prisma.store.delete({
             where: {
                 id: store.id,
             },
         })
-        res.json({ message: `Store with id: ${store.id} deleted` })
+        res.status(204).end()
     } else {
         res.status(405).json({ error: `Method ${req.method} not allowed.` })
     }
