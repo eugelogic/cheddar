@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (typeof prisma === 'undefined') {
-        res.status(500).send('Internal server error.')
+        res.status(500).json({ error: 'Internal server error.' })
         return
     }
     const store = await prisma.store.findUnique({

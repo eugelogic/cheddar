@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (typeof prisma === 'undefined') {
-        res.status(500).send('Internal server error.')
+        res.status(500).json({ error: 'Internal server error.' })
         return
     }
     const user = await prisma.user.findUnique({
@@ -59,14 +59,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 avatar: data.avatar,
             },
         })
-        res.json(userUpdated)
+        res.status(200).json(userUpdated)
     } else if (req.method === 'DELETE') {
         await prisma.user.delete({
             where: {
                 id: user.id,
             },
         })
-        res.send(`User with id: ${user.id} deleted`)
+        res.status(204).end()
     } else {
         res.status(405).json({ error: `Method ${req.method} not allowed.` })
     }
