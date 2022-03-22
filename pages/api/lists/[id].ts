@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
             data,
         })
-        res.status(200).json(listUpdated)
+        res.json(listUpdated)
     } else if (req.method === 'DELETE') {
         await prisma.list.delete({
             where: {

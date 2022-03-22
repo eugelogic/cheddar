@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 avatar: data.avatar,
             },
         })
-        res.status(200).json(userUpdated)
+        res.json(userUpdated)
     } else if (req.method === 'DELETE') {
         await prisma.user.delete({
             where: {
