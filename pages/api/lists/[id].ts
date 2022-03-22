@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     })
                     return match === null
                 }),
-            description: yup.string().nullable(),
+            description: yup.string(),
         })
 
         const data = await schema.validate({ name, description })

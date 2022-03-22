@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const schema = yup.object().shape({
             name: yup.string().min(1, 'Name cannot be empty'),
-            location: yup.string().nullable(),
+            location: yup.string(),
         })
 
         const data = await schema.validate({ name, location })
