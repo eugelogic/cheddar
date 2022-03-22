@@ -26,12 +26,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             storeId: yup
                 .number()
                 .test('store-id-not-found', 'Store id does not exist.', async (value) => {
-                    const match = await prisma?.list.findFirst({
+                    const match = await prisma?.store.findFirst({
                         where: {
-                            storeId: value,
+                            id: value,
                         },
                     })
-                    return match !== undefined
+                    return match !== null
                 })
                 .required(),
         })

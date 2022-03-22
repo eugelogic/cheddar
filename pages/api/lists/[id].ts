@@ -26,10 +26,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 .string()
                 .min(1, 'Name cannot be empty')
                 .test('unique-name', 'List name already exists.', async (value) => {
+                    if (typeof value === 'undefined' || !storeId) {
+                        return true
+                    }
                     const match = await prisma?.list.findFirst({
                         where: {
-                            name: value,
                             storeId: storeId,
+                            name: value || list.name,
+                            NOT: {
+                                id: list.id,
+                            },
                         },
                     })
                     return match === null
