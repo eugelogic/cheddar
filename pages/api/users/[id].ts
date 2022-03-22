@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }),
             password: yup.string().min(8),
             name: yup.string(),
-            avatar: yup.string().url().nullable(),
+            avatar: yup.string().url(),
         })
 
         const data = await schema.validate({ email, password, name, avatar })

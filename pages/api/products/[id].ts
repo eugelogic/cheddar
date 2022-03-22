@@ -7,55 +7,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(500).json({ error: 'Internal server error.' })
         return
     }
-    const list = await prisma.list.findUnique({
+    const product = await prisma.product.findUnique({
         where: {
             id: Number(req.query.id),
         },
     })
-    if (list === null || typeof list === 'undefined') {
-        res.status(404).json({ error: `List with id: ${req.query.id} does not exist.` })
+    if (product === null || typeof product === 'undefined') {
+        res.status(404).json({ error: `Product with id: ${req.query.id} does not exist.` })
         return
     }
     if (req.method === 'GET') {
-        res.json(list)
+        res.json(product)
     } else if (req.method === 'PATCH') {
-        const { name, description, storeId } = req.body
+        const { name, description, listId } = req.body
 
         const schema = yup.object().shape({
             name: yup
                 .string()
                 .min(1, 'Name cannot be empty')
-                .test('unique-name', 'List name already exists.', async (value) => {
-                    if (typeof value === 'undefined' || !storeId) {
+                .test('unique-name', 'Product name already exists.', async (value) => {
+                    if (typeof value === 'undefined' || !listId) {
                         return true
                     }
-                    const match = await prisma?.list.findFirst({
+                    const match = await prisma?.product.findFirst({
                         where: {
-                            storeId: storeId,
-                            name: value || list.name,
-                            NOT: {
-                                id: list.id,
-                            },
+                            name: value,
+                            listId: listId,
                         },
                     })
                     return match === null
                 }),
             description: yup.string(),
+            quantity: yup.number().min(1),
+            needsBuying: yup.boolean(),
+            basketed: yup.boolean(),
+            positionIndex: yup.number(),
+            price: yup.number(),
+            pricePerMeasurement: yup.number(),
+            image: yup.string().url(),
         })
 
         const data = await schema.validate({ name, description })
 
-        const listUpdated = await prisma.list.update({
+        const productUpdated = await prisma.product.update({
             where: {
-                id: list.id,
+                id: product.id,
             },
             data,
         })
-        res.json(listUpdated)
+        res.json(productUpdated)
     } else if (req.method === 'DELETE') {
-        await prisma.list.delete({
+        await prisma.product.delete({
             where: {
-                id: list.id,
+                id: product.id,
             },
         })
         res.status(204).end()
