@@ -22,8 +22,10 @@
     "dependencies": {
         "@prisma/client": "^3.10.0",
         "@types/bcrypt": "^5.0.0",
+        "@types/cookie": "^0.4.1",
         "@types/jsonwebtoken": "^8.5.8",
         "bcrypt": "^5.0.1",
+        "cookie": "^0.4.2",
         "jsonwebtoken": "^8.5.1",
         "next": "12.1.0",
         "react": "17.0.2",
