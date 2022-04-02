@@ -17,7 +17,7 @@ export async function handleLogin(url: string, ctx: NextPageContext) {
     // server side redirect
     if (res.status === 401 && ctx.req) {
         ctx.res?.writeHead(302, {
-            Location: 'http://localhost:3000/login',
+            Location: process.env.NODE_ENV !== 'development' ? '/login' : 'http://localhost:3000/login',
         })
         ctx.res?.end()
         return
