@@ -47,8 +47,7 @@ export default handleErrors(async function handler(req: NextApiRequest, res: Nex
                     path: '/',
                 })
             )
-            // res.json({ message: 'Welcome back to the app.' })
-            res.json(user.id)
+            res.json({ id: user.id })
         } else {
             res.status(401).json({ error: 'Invalid email or password.' })
         }
