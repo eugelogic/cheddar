@@ -8,12 +8,12 @@ export const handleAuth = (fn: NextApiHandler) => async (req: NextApiRequest, re
     if (!JWT_SECRET) {
         throw new Error('No JWT_SECRET provided.')
     }
-    try {
-        verify(req.cookies.auth!, JWT_SECRET)
-        return await fn(req, res)
-    } catch (err) {
+    verify(req.cookies.auth!, JWT_SECRET, async function (err, decoded: any) {
+        if (!err && decoded) {
+            return await fn(req, res)
+        }
         res.status(401).json({ error: 'Sorry you are not authenticated.' })
-    }
+    })
 }
 
 export const handleErrors = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
