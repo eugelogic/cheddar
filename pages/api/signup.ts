@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 import bcrypt from 'bcrypt'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { handleErrors } from '@lib/api'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -14,7 +14,7 @@ export default handleErrors(async function handler(req: NextApiRequest, res: Nex
                 .string()
                 .email('not a valid email')
                 .test('unique-email', 'email address already exists', async (value) => {
-                    const match = await prisma?.user.findUnique({
+                    const match = await prisma.user.findUnique({
                         where: {
                             email: value,
                         },
@@ -28,7 +28,7 @@ export default handleErrors(async function handler(req: NextApiRequest, res: Nex
         const data = await schema.validate({ email, password, name })
 
         // I'm adding any herebelow because TS flagged 'password: _' further down (L38)
-        const user: any = await prisma?.user.create({
+        const user: any = await prisma.user.create({
             data: {
                 email: data.email,
                 password: await bcrypt.hash(data.password, 12),

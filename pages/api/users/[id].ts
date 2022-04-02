@@ -1,15 +1,11 @@
 import * as yup from 'yup'
 import bcrypt from 'bcrypt'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
-        if (typeof prisma === 'undefined') {
-            res.status(500).json({ error: 'Internal server error.' })
-            return
-        }
         const user = await prisma.user.findUnique({
             where: {
                 id: parseInt(`${req.query.id}`, 10),

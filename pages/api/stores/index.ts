@@ -1,5 +1,5 @@
 import * as yup from 'yup'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -9,7 +9,7 @@ export default handleErrors(
         const currentUser = { id: 15 }
 
         if (req.method === 'GET') {
-            const stores = await prisma?.store.findMany()
+            const stores = await prisma.store.findMany()
             res.json(stores)
         } else if (req.method === 'POST') {
             const { name, location } = req.body
@@ -18,7 +18,7 @@ export default handleErrors(
                 name: yup
                     .string()
                     .test('unique-name', 'Store name already exists.', async (value) => {
-                        const match = await prisma?.store.findFirst({
+                        const match = await prisma.store.findFirst({
                             where: {
                                 name: value,
                                 userId: currentUser.id,
@@ -31,7 +31,7 @@ export default handleErrors(
             })
             const data = await schema.validate({ name, location })
 
-            const store = await prisma?.store.create({
+            const store = await prisma.store.create({
                 data: {
                     name: data.name,
                     location: data.location,

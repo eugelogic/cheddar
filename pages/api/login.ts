@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 import bcrypt from 'bcrypt'
 import { serialize } from 'cookie'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { sign } from 'jsonwebtoken'
 import { handleErrors } from '@lib/api'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -9,11 +9,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 const { JWT_SECRET } = process.env
 
 export default handleErrors(async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // can this error check go since I added /lib/api.ts ?
-    if (typeof prisma === 'undefined') {
-        res.status(500).json({ error: 'Internal server error.' })
-        return
-    }
     if (req.method === 'POST') {
         const schema = yup.object().shape({
             email: yup.string().email().required(),

@@ -1,14 +1,10 @@
 import * as yup from 'yup'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
-        if (typeof prisma === 'undefined') {
-            res.status(500).json({ error: 'Internal server error.' })
-            return
-        }
         const list = await prisma.list.findUnique({
             where: {
                 id: parseInt(`${req.query.id}`, 10),
@@ -31,7 +27,7 @@ export default handleErrors(
                         if (typeof value === 'undefined' || !storeId) {
                             return true
                         }
-                        const match = await prisma?.list.findFirst({
+                        const match = await prisma.list.findFirst({
                             where: {
                                 storeId: storeId,
                                 name: value || list.name,

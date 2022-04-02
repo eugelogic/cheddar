@@ -1,13 +1,13 @@
 import * as yup from 'yup'
 import bcrypt from 'bcrypt'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
         if (req.method === 'GET') {
-            const users = await prisma?.user.findMany()
+            const users = await prisma.user.findMany()
             res.json(users?.map(({ password, ...user }) => user))
         } else if (req.method === 'POST') {
             const { email, password, name, avatar } = req.body
@@ -17,7 +17,7 @@ export default handleErrors(
                     .string()
                     .email('not a valid email')
                     .test('unique-email', 'email address already exists', async (value) => {
-                        const match = await prisma?.user.findUnique({
+                        const match = await prisma.user.findUnique({
                             where: {
                                 email: value,
                             },
@@ -32,7 +32,7 @@ export default handleErrors(
 
             const data = await schema.validate({ email, password, name, avatar })
 
-            const user = await prisma?.user.create({
+            const user = await prisma.user.create({
                 data: {
                     email: data.email,
                     password: await bcrypt.hash(data.password, 12),

@@ -1,12 +1,12 @@
 import * as yup from 'yup'
-import prisma from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiResponse, NextApiRequest } from 'next'
 
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
         if (req.method === 'GET') {
-            const lists = await prisma?.list.findMany()
+            const lists = await prisma.list.findMany()
             res.json(lists)
         } else if (req.method === 'POST') {
             const { storeId } = req.body
@@ -15,7 +15,7 @@ export default handleErrors(
                 name: yup
                     .string()
                     .test('unique-name', 'List name already exists.', async (value) => {
-                        const match = await prisma?.list.findFirst({
+                        const match = await prisma.list.findFirst({
                             where: {
                                 name: value,
                                 storeId: storeId,
@@ -28,7 +28,7 @@ export default handleErrors(
                 storeId: yup
                     .number()
                     .test('store-id-not-found', 'Store id does not exist.', async (value) => {
-                        const match = await prisma?.store.findFirst({
+                        const match = await prisma.store.findFirst({
                             where: {
                                 id: value,
                             },
@@ -40,7 +40,7 @@ export default handleErrors(
 
             const data = await schema.validate(req.body)
 
-            const list = await prisma?.list.create({ data })
+            const list = await prisma.list.create({ data })
             res.status(201).json(list)
         } else {
             res.status(405).json({ error: `Method ${req.method} not allowed.` })
