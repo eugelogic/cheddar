@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import { handleLogin } from '@lib/login'
+import { Store } from '@prisma/client'
 import { NextPageContext } from 'next'
+import { handleLogin } from '@lib/login'
 
 // I guess I should use getServerSideProps() instead
 Stores.getInitialProps = async (ctx: NextPageContext) => {
@@ -8,7 +9,10 @@ Stores.getInitialProps = async (ctx: NextPageContext) => {
     return { stores: json }
 }
 
-export default function Stores({ stores }: any) {
+type Stores = {
+    stores: Store[]
+}
+export default function Stores({ stores }: Stores) {
     return (
         <>
             <Link href="/">
@@ -19,8 +23,7 @@ export default function Stores({ stores }: any) {
             <br />
             <div>
                 <h1>Stores</h1>
-                {/* <code>{JSON.stringify(stores)}</code> */}
-                <ul>{stores.length > 0 && stores.map((store: any) => <li key={store.name}>{store.name}</li>)}</ul>
+                <ul>{stores.length > 0 && stores.map((store) => <li key={store.name}>{store.name}</li>)}</ul>
             </div>
         </>
     )

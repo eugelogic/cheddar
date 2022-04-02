@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 export default function Login() {
     const emailRef = useRef<HTMLInputElement>(null)
     const passRef = useRef<HTMLInputElement>(null)
-    const [message, setMessage] = useState<any>(null)
+    const [message, setMessage] = useState<{ id: number } | null>(null)
     async function handleLogin() {
         const resp = await fetch('http://localhost:3000/api/login', {
             method: 'POST',
