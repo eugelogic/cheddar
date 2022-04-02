@@ -2,11 +2,9 @@ import { NextPageContext } from 'next'
 import Router from 'next/router'
 
 export async function handleLogin(url: string, ctx: NextPageContext) {
-    const cookie = ctx.req?.headers.cookie
-
     const res = await fetch(url, {
         headers: {
-            cookie: cookie!,
+            ...(ctx.req?.headers.cookie ? { cookie: ctx.req?.headers.cookie } : {}),
         },
     })
 
@@ -25,6 +23,5 @@ export async function handleLogin(url: string, ctx: NextPageContext) {
         return
     }
 
-    const json = await res.json()
-    return json
+    return await res.json()
 }
