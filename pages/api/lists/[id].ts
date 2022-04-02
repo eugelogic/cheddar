@@ -11,7 +11,7 @@ export default handleErrors(
         }
         const list = await prisma.list.findUnique({
             where: {
-                id: Number(req.query.id),
+                id: parseInt(`${req.query.id}`, 10),
             },
         })
         if (list === null || typeof list === 'undefined') {

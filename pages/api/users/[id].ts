@@ -12,7 +12,7 @@ export default handleErrors(
         }
         const user = await prisma.user.findUnique({
             where: {
-                id: Number(req.query.id),
+                id: parseInt(`${req.query.id}`, 10),
             },
         })
         if (user === null || typeof user === 'undefined') {

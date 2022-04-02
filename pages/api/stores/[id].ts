@@ -11,7 +11,7 @@ export default handleErrors(
         }
         const store = await prisma.store.findUnique({
             where: {
-                id: Number(req.query.id),
+                id: parseInt(`${req.query.id}`, 10),
             },
         })
         if (store === null || typeof store === 'undefined') {
