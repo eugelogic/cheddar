@@ -1,6 +1,6 @@
 import { verify } from 'jsonwebtoken'
 import { ValidationError } from 'yup'
-import { NextApiRequestWithUser } from './types'
+import type { NextApiRequestWithUser } from './types'
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
 const { JWT_SECRET } = process.env

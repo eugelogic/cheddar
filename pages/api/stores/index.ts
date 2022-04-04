@@ -1,15 +1,19 @@
 import * as yup from 'yup'
 import { prisma } from '@lib/prisma'
+import type { NextApiResponse } from 'next'
 import { handleAuth, handleErrors } from '@lib/api'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequestWithUser } from '@lib/types'
 
 export default handleErrors(
-    handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
-        // hardcoded user id, to be replaced with value from authentication
-        const currentUser = { id: 15 }
+    handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
+        const currentUser = req.user!
 
         if (req.method === 'GET') {
-            const stores = await prisma.store.findMany()
+            const stores = await prisma.store.findMany({
+                where: {
+                    userId: currentUser.id,
+                },
+            })
             res.json(stores)
         } else if (req.method === 'POST') {
             const { name, location } = req.body
