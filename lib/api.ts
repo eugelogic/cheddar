@@ -1,15 +1,17 @@
 import { verify } from 'jsonwebtoken'
 import { ValidationError } from 'yup'
+import { NextApiRequestWithUser } from './types'
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
 const { JWT_SECRET } = process.env
 
-export const handleAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
+export const handleAuth = (fn: NextApiHandler) => async (req: NextApiRequestWithUser, res: NextApiResponse) => {
     if (!JWT_SECRET) {
         throw new Error('No JWT_SECRET provided.')
     }
     verify(req.cookies.auth!, JWT_SECRET, async function (err, decoded: any) {
         if (!err && decoded) {
+            req.user = decoded.user
             return await fn(req, res)
         }
         res.status(401).json({ error: 'Sorry you are not authenticated.' })
