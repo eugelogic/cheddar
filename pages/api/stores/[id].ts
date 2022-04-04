@@ -1,10 +1,12 @@
 import * as yup from 'yup'
 import { prisma } from '@lib/prisma'
+import type { NextApiResponse } from 'next'
 import { handleAuth, handleErrors } from '@lib/api'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequestWithUser } from '@lib/types'
 
 export default handleErrors(
-    handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
+    handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
+        const currentUser = req.user!
         const store = await prisma.store.findUnique({
             where: {
                 id: parseInt(`${req.query.id}`, 10),
@@ -12,6 +14,10 @@ export default handleErrors(
         })
         if (store === null || typeof store === 'undefined') {
             res.status(404).json({ error: `Store with id: ${req.query.id} does not exist.` })
+            return
+        }
+        if (currentUser.id !== store.userId) {
+            res.status(403).json({ error: 'User not authorised.' })
             return
         }
         if (req.method === 'GET') {
