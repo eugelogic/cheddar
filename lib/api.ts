@@ -1,21 +1,37 @@
-import { verify } from 'jsonwebtoken'
+import { JsonWebTokenError, TokenExpiredError, verify } from 'jsonwebtoken'
 import { ValidationError } from 'yup'
 import type { NextApiRequestWithUser } from './types'
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
 const { JWT_SECRET } = process.env
 
+class AuthenticationError extends Error {}
+
+function verifyAsync(jwt: string, secret: string) {
+    return new Promise(function (resolve, reject) {
+        verify(jwt, secret, function (err, decoded: any) {
+            if (err) {
+                return reject(err)
+            }
+            resolve(decoded)
+        })
+    })
+}
+
 export const handleAuth = (fn: NextApiHandler) => async (req: NextApiRequestWithUser, res: NextApiResponse) => {
     if (!JWT_SECRET) {
         throw new Error('No JWT_SECRET provided.')
     }
-    verify(req.cookies.auth!, JWT_SECRET, async function (err, decoded: any) {
-        if (!err && decoded) {
-            req.user = decoded.user
-            return await fn(req, res)
+    try {
+        const decoded = (await verifyAsync(req.cookies.auth!, JWT_SECRET)) as any
+        req.user = decoded.user
+        return await fn(req, res)
+    } catch (err) {
+        if (err instanceof JsonWebTokenError || err instanceof TokenExpiredError) {
+            throw new AuthenticationError('Sorry you are not authenticated.')
         }
-        res.status(401).json({ error: 'Sorry you are not authenticated.' })
-    })
+        throw err
+    }
 }
 
 export const handleErrors = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -28,6 +44,10 @@ export const handleErrors = (fn: NextApiHandler) => async (req: NextApiRequest, 
                 return
             }
             // add any extra error checks here
+            if (err instanceof AuthenticationError) {
+                res.status(401).json({ error: err.message })
+                return
+            }
             throw err
         }
     } catch (err) {
