@@ -9,13 +9,13 @@ export async function handleLogin(url: string, ctx: NextPageContext) {
     })
 
     // client side redirect
-    if (res.status === 401 && !ctx.req) {
+    if (res.status === 401 && typeof window !== 'undefined') {
         Router.replace('/login')
         return
     }
 
     // server side redirect
-    if (res.status === 401 && ctx.req) {
+    if (res.status === 401 && typeof window === 'undefined') {
         ctx.res?.writeHead(302, {
             Location: process.env.NODE_ENV !== 'development' ? '/login' : 'http://localhost:3000/login',
         })
