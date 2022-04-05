@@ -28,7 +28,7 @@ export default handleErrors(
         if (req.method === 'GET') {
             res.json(product)
         } else if (req.method === 'PATCH') {
-            const { name, description, listId } = req.body
+            const { listId } = req.body
 
             const schema = yup.object().shape({
                 name: yup
@@ -56,7 +56,7 @@ export default handleErrors(
                 image: yup.string().url(),
             })
 
-            const data = await schema.validate({ name, description })
+            const data = await schema.validate(req.body)
 
             const productUpdated = await prisma.product.update({
                 where: {
