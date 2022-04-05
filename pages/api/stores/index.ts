@@ -7,7 +7,6 @@ import type { NextApiRequestWithUser } from '@lib/types'
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
         const currentUser = req.user!
-
         if (req.method === 'GET') {
             const stores = await prisma.store.findMany({
                 where: {

@@ -1,13 +1,19 @@
 import * as yup from 'yup'
 import bcrypt from 'bcrypt'
 import { prisma } from '@lib/prisma'
+import type { NextApiResponse } from 'next'
 import { handleAuth, handleErrors } from '@lib/api'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequestWithUser } from '@lib/types'
 
 export default handleErrors(
-    handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
+    handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
+        const currentUser = req.user!
         if (req.method === 'GET') {
-            const users = await prisma.user.findMany()
+            const users = await prisma.user.findMany({
+                where: {
+                    id: currentUser.id,
+                },
+            })
             res.json(users?.map(({ password, ...user }) => user))
         } else if (req.method === 'POST') {
             const { email, password, name, avatar } = req.body

@@ -1,13 +1,22 @@
 import * as yup from 'yup'
 import { prisma } from '@lib/prisma'
+import type { NextApiResponse } from 'next'
 import { handleAuth, handleErrors } from '@lib/api'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequestWithUser } from '@lib/types'
 
 export default handleErrors(
-    handleAuth(async function handler(req: NextApiRequest, res: NextApiResponse) {
-        const list = await prisma.list.findUnique({
+    handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
+        const currentUser = req.user!
+        const list = await prisma.list.findFirst({
             where: {
-                id: parseInt(`${req.query.id}`, 10),
+                AND: [
+                    { id: parseInt(`${req.query.id}`, 10) },
+                    {
+                        store: {
+                            userId: currentUser.id,
+                        },
+                    },
+                ],
             },
         })
         if (list === null || typeof list === 'undefined') {
