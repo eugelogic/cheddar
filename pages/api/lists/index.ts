@@ -1,8 +1,8 @@
 import * as yup from 'yup'
 import { prisma } from '@lib/prisma'
 import type { NextApiResponse } from 'next'
-import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiRequestWithUser } from '@lib/types'
+import { AuthenticationError, handleAuth, handleErrors } from '@lib/api'
 
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
@@ -18,6 +18,15 @@ export default handleErrors(
             res.json(lists)
         } else if (req.method === 'POST') {
             const { storeId } = req.body
+
+            const currentStore = await prisma.store.findUnique({
+                where: {
+                    id: storeId,
+                },
+            })
+            if (currentStore?.userId !== currentUser.id) {
+                res.status(403).json({ error: 'This store belongs to another user.' })
+            }
 
             const schema = yup.object().shape({
                 name: yup

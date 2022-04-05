@@ -1,8 +1,8 @@
 import * as yup from 'yup'
 import { prisma } from '@lib/prisma'
 import type { NextApiResponse } from 'next'
-import { handleAuth, handleErrors } from '@lib/api'
 import type { NextApiRequestWithUser } from '@lib/types'
+import { AuthenticationError, handleAuth, handleErrors } from '@lib/api'
 
 export default handleErrors(
     handleAuth(async function handler(req: NextApiRequestWithUser, res: NextApiResponse) {
@@ -20,6 +20,22 @@ export default handleErrors(
             res.json(products)
         } else if (req.method === 'POST') {
             const { listId } = req.body
+
+            const currentList = await prisma.list.findFirst({
+                where: {
+                    AND: [
+                        { id: listId },
+                        {
+                            store: {
+                                userId: currentUser.id,
+                            },
+                        },
+                    ],
+                },
+            })
+            if (currentList === null || typeof currentList === 'undefined') {
+                res.status(403).json({ error: 'This list belongs to another user.' })
+            }
 
             const schema = yup.object().shape({
                 name: yup
