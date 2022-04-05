@@ -1,11 +1,11 @@
-import { JsonWebTokenError, TokenExpiredError, verify } from 'jsonwebtoken'
 import { ValidationError } from 'yup'
 import type { NextApiRequestWithUser } from './types'
+import { JsonWebTokenError, TokenExpiredError, verify } from 'jsonwebtoken'
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
 const { JWT_SECRET } = process.env
 
-class AuthenticationError extends Error {}
+export class AuthenticationError extends Error {}
 
 function verifyAsync(jwt: string, secret: string) {
     return new Promise(function (resolve, reject) {
@@ -28,7 +28,7 @@ export const handleAuth = (fn: NextApiHandler) => async (req: NextApiRequestWith
         return await fn(req, res)
     } catch (err) {
         if (err instanceof JsonWebTokenError || err instanceof TokenExpiredError) {
-            throw new AuthenticationError('Sorry you are not authenticated.')
+            throw new AuthenticationError()
         }
         throw err
     }
@@ -45,7 +45,7 @@ export const handleErrors = (fn: NextApiHandler) => async (req: NextApiRequest, 
             }
             // add any extra error checks here
             if (err instanceof AuthenticationError) {
-                res.status(401).json({ error: err.message })
+                res.status(401).json({ error: 'Sorry you are not authenticated.' })
                 return
             }
             throw err
