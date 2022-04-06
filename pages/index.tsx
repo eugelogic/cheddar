@@ -1,9 +1,14 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
+    const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const today = new Date()
+    let dow = weekday[today.getDay()]
+
     return (
         <div className={styles.container}>
             <Head>
@@ -13,25 +18,21 @@ const Home: NextPage = () => {
             </Head>
 
             <main className={styles.main}>
-                <h2>Happy Friday</h2>
-                <h1 className={styles.title}>
-                    Welcome to <a href="https://nextjs.org">Next.js!</a>
-                </h1>
-
-                <p className={styles.description}>
-                    Get started by editing <code className={styles.code}>pages/index.tsx</code>
-                </p>
+                <h2>Happy {dow}</h2>
+                <h1 className={styles.title}>Welcome to Cheddar</h1>
 
                 <div className={styles.grid}>
-                    <a href="https://nextjs.org/docs" className={styles.card}>
-                        <h2>Documentation &rarr;</h2>
-                        <p>Find in-depth information about Next.js features and API.</p>
-                    </a>
+                    <Link href="/stores">
+                        <a className={styles.card}>
+                            <h2>Stores &rarr;</h2>
+                        </a>
+                    </Link>
 
-                    <a href="https://nextjs.org/learn" className={styles.card}>
-                        <h2>Learn &rarr;</h2>
-                        <p>Learn about Next.js in an interactive course with quizzes!</p>
-                    </a>
+                    <Link href="/lists">
+                        <a className={styles.card}>
+                            <h2>Lists &rarr;</h2>
+                        </a>
+                    </Link>
                 </div>
             </main>
 
