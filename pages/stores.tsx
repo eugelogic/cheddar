@@ -3,16 +3,17 @@ import { Store } from '@prisma/client'
 import { NextPageContext } from 'next'
 import { handleLogin } from '@lib/login'
 
-// I guess I should use getServerSideProps() instead
-Stores.getInitialProps = async (ctx: NextPageContext) => {
-    const json = await handleLogin('http://localhost:3000/api/stores', ctx)
-    return { stores: json }
+export const getServerSideProps = async (context: NextPageContext) => {
+    const json = await handleLogin('http://localhost:3000/api/stores', context)
+    return {
+        props: { stores: json },
+    }
 }
 
 type Stores = {
     stores: Store[]
 }
-export default function Stores({ stores }: Stores) {
+const Stores = ({ stores }: Stores) => {
     return (
         <>
             <Link href="/">
@@ -28,3 +29,5 @@ export default function Stores({ stores }: Stores) {
         </>
     )
 }
+
+export default Stores

@@ -3,16 +3,17 @@ import { List } from '@prisma/client'
 import { NextPageContext } from 'next'
 import { handleLogin } from '@lib/login'
 
-// I guess I should use getServerSideProps() instead
-Lists.getInitialProps = async (ctx: NextPageContext) => {
-    const json = await handleLogin('http://localhost:3000/api/lists', ctx)
-    return { lists: json }
+export const getServerSideProps = async (context: NextPageContext) => {
+    const json = await handleLogin('http://localhost:3000/api/lists', context)
+    return {
+        props: { lists: json },
+    }
 }
 
 type Lists = {
     lists: List[]
 }
-export default function Lists({ lists }: Lists) {
+const Lists = ({ lists }: Lists) => {
     return (
         <>
             <Link href="/">
@@ -28,3 +29,5 @@ export default function Lists({ lists }: Lists) {
         </>
     )
 }
+
+export default Lists
